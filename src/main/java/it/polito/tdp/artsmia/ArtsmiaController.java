@@ -3,7 +3,9 @@ package it.polito.tdp.artsmia;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.artsmia.model.Adiacenza;
 import it.polito.tdp.artsmia.model.Model;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,6 +16,7 @@ import javafx.scene.control.TextField;
 public class ArtsmiaController {
 	
 	private Model model ;
+	
 
     @FXML
     private ResourceBundle resources;
@@ -31,7 +34,7 @@ public class ArtsmiaController {
     private Button btnCalcolaPercorso;
 
     @FXML
-    private ComboBox<?> boxRuolo;
+    private ComboBox<String> boxRuolo;
 
     @FXML
     private TextField txtArtista;
@@ -42,7 +45,12 @@ public class ArtsmiaController {
     @FXML
     void doArtistiConnessi(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Calcola artisti connessi");
+    	
+    	String role = boxRuolo.getValue();
+    	
+    	for(Adiacenza a :this.model.getAdiacenti(role)) {
+    		txtResult.appendText(a.getA1()+", "+a.getA2()+"con peso "+a.getPeso());
+    	}
     }
 
     @FXML
@@ -53,11 +61,25 @@ public class ArtsmiaController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-    	txtResult.clear();
-    	txtResult.appendText("Crea grafo");
+    	
+    	String ruolo=boxRuolo.getValue();
+    	model.creaGrafo(ruolo);
+    	
+    	txtResult.appendText("GRAFO CREATO"+"\n");
+    	
+    	txtResult.appendText("#VERTICI "+Integer.toString(model.nVertici())+"\n");
+    	txtResult.appendText("#ARCHI "+Integer.toString(model.nArchi())+"\n");
+    		
     }
 
     public void setModel(Model model) {
+    	
+    	this.model = model;
+    	for(String g: this.model.getRuoliVettore()) {
+        	boxRuolo.getItems().add(g);
+
+    	}
+    	
     	this.model = model;
     }
 
@@ -72,4 +94,7 @@ public class ArtsmiaController {
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'Artsmia.fxml'.";
 
     }
+    
+
+    
 }
